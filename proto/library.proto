@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package bookService;
+
+option go_package = "./";
+
+service Book{
+  rpc List(BookData) returns (ListBook){}
+  rpc Add(BookData) returns (BookData){}
+  rpc Get(BookData) returns (BookData){}
+  rpc Update(BookData) returns (BookData){}
+  rpc Delete(BookData) returns (BookData){}
+}
+
+message BookData{
+  string id = 1 [(tagger.tags) = "bson:\"_id,omitempty\""];
+  string name = 2;
+  string genre = 3;
+  string isbn = 4;
+}
+
+message ListBook{
+  repeated BookData data = 1;
+}
+
+service Author{
+  rpc List(AuthorData) returns (ListAuthor){}
+  rpc Add(AuthorData) returns (AuthorData){}
+  rpc Get(AuthorData) returns (AuthorData){}
+  rpc Update(AuthorData) returns (AuthorData){}
+  rpc Delete(AuthorData) returns (AuthorData){}
+}
+
+message AuthorData{
+  string id = 1 [(tagger.tags) = "bson:\"_id,omitempty\""];;
+  string fullName = 2;
+  string pseudonym  = 3;
+  string specialty = 4;
+}
+
+message ListAuthor{
+  repeated AuthorData data = 1;
+}
+
+service Member{
+  rpc List(MemberData) returns (ListMember){}
+  rpc Add(MemberData) returns (MemberData){}
+  rpc Get(MemberData) returns (MemberData){}
+  rpc Update(MemberData) returns (MemberData){}
+  rpc Delete(MemberData) returns (MemberData){}
+}
+
+message MemberData{
+  string id = 1 [(tagger.tags) = "bson:\"_id,omitempty\""];;
+  string fullName = 2;
+  repeated BookData books  = 3;
+}
+
+message ListMember{
+  repeated MemberData data = 1;
+}
