@@ -44,13 +44,13 @@ func (s *MemberRepository) List(ctx context.Context) ([]member.Entity, error) {
 //	return &books, nil
 //}
 
-func (s *MemberRepository) Add(ctx context.Context, req *member.Entity) (*member.Entity, error) {
+func (s *MemberRepository) Add(ctx context.Context, req *member.Entity) (interface{}, error) {
 	res, err := s.db.InsertOne(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 	req.ObjectID = res.InsertedID.(primitive.ObjectID)
-	return req, nil
+	return res.InsertedID, nil
 }
 
 func (s *MemberRepository) Get(ctx context.Context, id string) (*member.Entity, error) {
@@ -62,22 +62,22 @@ func (s *MemberRepository) Get(ctx context.Context, id string) (*member.Entity, 
 	return &res, nil
 }
 
-func (s *MemberRepository) Update(ctx context.Context, req *member.Entity) (*member.Entity, error) {
+func (s *MemberRepository) Update(ctx context.Context, req *member.Entity) error {
 	options.Update().SetUpsert(true)
 	b, _ := json.Marshal(&req)
 	filter := bson.D{{"_id", req.ObjectID}}
 	update := bson.D{{"$set", b}}
 	_, err := s.db.UpdateOne(ctx, filter, update)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return req, nil
+	return nil
 }
 
-func (s *MemberRepository) Delete(ctx context.Context, req *member.Entity) (*member.Entity, error) {
-	_, err := s.db.DeleteOne(ctx, bson.D{{"_id", req.ObjectID}})
+func (s *MemberRepository) Delete(ctx context.Context, id string) error {
+	_, err := s.db.DeleteOne(ctx, bson.D{{"_id", id}})
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return req, nil
+	return nil
 }

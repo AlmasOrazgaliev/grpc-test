@@ -2,7 +2,9 @@ package author
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.uber.org/zap"
+	"libraryService/internal/model/author"
 	"libraryService/pkg/log"
 	desc "libraryService/proto"
 )
@@ -10,54 +12,68 @@ import (
 func (s *Service) List(ctx context.Context, req *desc.AuthorData) (res *desc.ListAuthor, err error) {
 	logger := log.LoggerFromContext(ctx).Named("ListAuthors")
 
-	res, err = s.authorRepository.List(ctx)
+	data, err := s.authorRepository.List(ctx)
 	if err != nil {
 		logger.Error("failed to select", zap.Error(err))
 		return
 	}
+	res.Data = author.ParseFromEntities(data)
 	return
 }
 
 func (s *Service) Add(ctx context.Context, req *desc.AuthorData) (res *desc.AuthorData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("AddAuthor")
-
-	res, err = s.authorRepository.Add(ctx, req)
+	data := &author.Entity{
+		FullName:  &req.FullName,
+		Pseudonym: &req.Pseudonym,
+		Specialty: &req.Specialty,
+	}
+	id, err := s.authorRepository.Add(ctx, data)
+	data.ObjectID = id.(primitive.ObjectID)
 	if err != nil {
 		logger.Error("failed to add", zap.Error(err))
 		return
 	}
+	res = author.ParseFromEntity(data)
 	return
 }
 
 func (s *Service) Get(ctx context.Context, req *desc.AuthorData) (res *desc.AuthorData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("GetAuthor")
 
-	res, err = s.authorRepository.Get(ctx, req.GetId())
+	data, err := s.authorRepository.Get(ctx, req.GetId())
 	if err != nil {
 		logger.Error("failed to get", zap.Error(err))
 		return
 	}
+	res = author.ParseFromEntity(data)
 	return
 }
 
 func (s *Service) Update(ctx context.Context, req *desc.AuthorData) (res *desc.AuthorData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("UpdateAuthor")
-
-	res, err = s.authorRepository.Update(ctx, req)
+	data := &author.Entity{
+		FullName:  &req.FullName,
+		Pseudonym: &req.Pseudonym,
+		Specialty: &req.Specialty,
+	}
+	err = s.authorRepository.Update(ctx, data)
 	if err != nil {
 		logger.Error("failed to update", zap.Error(err))
 		return
 	}
+	res = author.ParseFromEntity(data)
 	return
 }
 
 func (s *Service) Delete(ctx context.Context, req *desc.AuthorData) (res *desc.AuthorData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("DeleteAuthor")
 
-	res, err = s.authorRepository.Delete(ctx, req)
+	err = s.authorRepository.Delete(ctx, req.GetId())
 	if err != nil {
 		logger.Error("failed to delete", zap.Error(err))
 		return
 	}
+	res = req
 	return
 }

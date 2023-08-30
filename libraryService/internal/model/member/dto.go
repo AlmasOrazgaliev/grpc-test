@@ -5,8 +5,8 @@ import (
 	desc "libraryService/proto"
 )
 
-func ParseFromEntity(data Entity) (res desc.MemberData) {
-	res = desc.MemberData{
+func ParseFromEntity(data *Entity) (res *desc.MemberData) {
+	res = &desc.MemberData{
 		Id:       data.ObjectID.Hex(),
 		FullName: *data.FullName,
 		Books:    book.ParseFromEntities(data.Books),
@@ -14,10 +14,10 @@ func ParseFromEntity(data Entity) (res desc.MemberData) {
 	return
 }
 
-func ParseFromEntities(data []Entity) (res []desc.MemberData) {
-	res = make([]desc.MemberData, 0)
+func ParseFromEntities(data []Entity) (res []*desc.MemberData) {
+	res = make([]*desc.MemberData, 0)
 	for _, object := range data {
-		res = append(res, ParseFromEntity(object))
+		res = append(res, ParseFromEntity(&object))
 	}
 	return
 }

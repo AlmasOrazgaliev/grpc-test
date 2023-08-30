@@ -32,14 +32,13 @@ func (s *AuthorRepository) List(ctx context.Context) ([]author.Entity, error) {
 	return authors, nil
 }
 
-func (s *AuthorRepository) Add(ctx context.Context, req *author.Entity) (*author.Entity, error) {
+func (s *AuthorRepository) Add(ctx context.Context, req *author.Entity) (interface{}, error) {
 	res, err := s.db.InsertOne(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 	req.ObjectID = res.InsertedID.(primitive.ObjectID)
-	//fmt.Println(res.InsertedID.(string))
-	return req, nil
+	return res.InsertedID, nil
 }
 
 func (s *AuthorRepository) Get(ctx context.Context, id string) (*author.Entity, error) {
@@ -51,22 +50,22 @@ func (s *AuthorRepository) Get(ctx context.Context, id string) (*author.Entity, 
 	return &res, nil
 }
 
-func (s *AuthorRepository) Update(ctx context.Context, req *author.Entity) (*author.Entity, error) {
+func (s *AuthorRepository) Update(ctx context.Context, req *author.Entity) error {
 	options.Update().SetUpsert(true)
 	b, _ := json.Marshal(&req)
 	filter := bson.D{{"_id", req.ObjectID}}
 	update := bson.D{{"$set", b}}
 	_, err := s.db.UpdateOne(ctx, filter, update)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return req, nil
+	return nil
 }
 
-func (s *AuthorRepository) Delete(ctx context.Context, req *author.Entity) (*author.Entity, error) {
-	_, err := s.db.DeleteOne(ctx, bson.D{{"_id", req.ObjectID}})
+func (s *AuthorRepository) Delete(ctx context.Context, id string) error {
+	_, err := s.db.DeleteOne(ctx, bson.D{{"_id", id}})
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return req, nil
+	return nil
 }
