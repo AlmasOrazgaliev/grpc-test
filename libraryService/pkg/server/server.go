@@ -3,6 +3,10 @@ package server
 import (
 	"context"
 	"fmt"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/reflection"
 	"libraryService/internal/service/author"
 	"libraryService/internal/service/book"
@@ -79,7 +83,17 @@ func WithGRPCServer(port string, author *author.Service, book *book.Service, mem
 		if err != nil {
 			return
 		}
-		s.grpc = grpc.NewServer()
+		log := logrus.NewEntry(logrus.StandardLogger())
+		s.grpc = grpc.NewServer(
+			grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
+				grpc_logrus.StreamServerInterceptor(log),
+				grpc_recovery.StreamServerInterceptor(),
+			)),
+			grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+				grpc_logrus.UnaryServerInterceptor(log),
+				grpc_recovery.UnaryServerInterceptor(),
+			)),
+		)
 		reflection.Register(s.grpc)
 		desc.RegisterAuthorServer(s.grpc, author)
 		desc.RegisterBookServer(s.grpc, book)
