@@ -3,12 +3,11 @@ package mongo
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	desc "libraryService/proto"
+	"libraryService/internal/model/book"
 )
 
 type BookRepository struct {
@@ -21,30 +20,28 @@ func NewBookRepository(db *mongo.Collection) BookRepository {
 	}
 }
 
-func (s *BookRepository) List(ctx context.Context) (*desc.ListBook, error) {
-	var books desc.ListBook
+func (s *BookRepository) List(ctx context.Context) (dest []book.Entity, err error) {
 	cursor, err := s.db.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, err
 	}
-	if err = cursor.All(context.TODO(), &books.Data); err != nil {
+	if err = cursor.All(context.TODO(), &dest); err != nil {
 		return nil, err
 	}
-	return &books, nil
+	return
 }
 
-func (s *BookRepository) Add(ctx context.Context, req *desc.BookData) (*desc.BookData, error) {
+func (s *BookRepository) Add(ctx context.Context, req *book.Entity) (*book.Entity, error) {
 	res, err := s.db.InsertOne(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	primitive.ObjectID{}.Hex()
-	fmt.Println(res.InsertedID)
+	req.ObjectID = res.InsertedID.(primitive.ObjectID)
 	return req, nil
 }
 
-func (s *BookRepository) Get(ctx context.Context, id string) (*desc.BookData, error) {
-	res := desc.BookData{}
+func (s *BookRepository) Get(ctx context.Context, id string) (*book.Entity, error) {
+	res := book.Entity{}
 	err := s.db.FindOne(ctx, bson.D{{"_id", id}}).Decode(&res)
 	if err != nil {
 		return nil, err
@@ -52,10 +49,10 @@ func (s *BookRepository) Get(ctx context.Context, id string) (*desc.BookData, er
 	return &res, nil
 }
 
-func (s *BookRepository) Update(ctx context.Context, req *desc.BookData) (*desc.BookData, error) {
+func (s *BookRepository) Update(ctx context.Context, req *book.Entity) (*book.Entity, error) {
 	options.Update().SetUpsert(true)
 	b, _ := json.Marshal(&req)
-	filter := bson.D{{"_id", req.Id}}
+	filter := bson.D{{"_id", req.ObjectID}}
 	update := bson.D{{"$set", b}}
 	_, err := s.db.UpdateOne(ctx, filter, update)
 	if err != nil {
@@ -64,8 +61,8 @@ func (s *BookRepository) Update(ctx context.Context, req *desc.BookData) (*desc.
 	return req, nil
 }
 
-func (s *BookRepository) Delete(ctx context.Context, req *desc.BookData) (*desc.BookData, error) {
-	_, err := s.db.DeleteOne(ctx, bson.D{{"_id", req.Id}})
+func (s *BookRepository) Delete(ctx context.Context, req *book.Entity) (*book.Entity, error) {
+	_, err := s.db.DeleteOne(ctx, bson.D{{"_id", req.ObjectID}})
 	if err != nil {
 		return nil, err
 	}

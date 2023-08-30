@@ -3,11 +3,11 @@ package mongo
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	desc "libraryService/proto"
+	"libraryService/internal/model/author"
 )
 
 type AuthorRepository struct {
@@ -20,29 +20,30 @@ func NewAuthorRepository(db *mongo.Collection) AuthorRepository {
 	}
 }
 
-func (s *AuthorRepository) List(ctx context.Context) (*desc.ListAuthor, error) {
-	var books desc.ListAuthor
+func (s *AuthorRepository) List(ctx context.Context) ([]author.Entity, error) {
+	var authors []author.Entity
 	cursor, err := s.db.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, err
 	}
-	if err = cursor.All(context.TODO(), &books.Data); err != nil {
+	if err = cursor.All(context.TODO(), &authors); err != nil {
 		return nil, err
 	}
-	return &books, nil
+	return authors, nil
 }
 
-func (s *AuthorRepository) Add(ctx context.Context, req *desc.AuthorData) (*desc.AuthorData, error) {
+func (s *AuthorRepository) Add(ctx context.Context, req *author.Entity) (*author.Entity, error) {
 	res, err := s.db.InsertOne(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(res.InsertedID.(string))
+	req.ObjectID = res.InsertedID.(primitive.ObjectID)
+	//fmt.Println(res.InsertedID.(string))
 	return req, nil
 }
 
-func (s *AuthorRepository) Get(ctx context.Context, id string) (*desc.AuthorData, error) {
-	res := desc.AuthorData{}
+func (s *AuthorRepository) Get(ctx context.Context, id string) (*author.Entity, error) {
+	res := author.Entity{}
 	err := s.db.FindOne(ctx, bson.D{{"_id", id}}).Decode(&res)
 	if err != nil {
 		return nil, err
@@ -50,10 +51,10 @@ func (s *AuthorRepository) Get(ctx context.Context, id string) (*desc.AuthorData
 	return &res, nil
 }
 
-func (s *AuthorRepository) Update(ctx context.Context, req *desc.AuthorData) (*desc.AuthorData, error) {
+func (s *AuthorRepository) Update(ctx context.Context, req *author.Entity) (*author.Entity, error) {
 	options.Update().SetUpsert(true)
 	b, _ := json.Marshal(&req)
-	filter := bson.D{{"_id", req.Id}}
+	filter := bson.D{{"_id", req.ObjectID}}
 	update := bson.D{{"$set", b}}
 	_, err := s.db.UpdateOne(ctx, filter, update)
 	if err != nil {
@@ -62,8 +63,8 @@ func (s *AuthorRepository) Update(ctx context.Context, req *desc.AuthorData) (*d
 	return req, nil
 }
 
-func (s *AuthorRepository) Delete(ctx context.Context, req *desc.AuthorData) (*desc.AuthorData, error) {
-	_, err := s.db.DeleteOne(ctx, bson.D{{"_id", req.Id}})
+func (s *AuthorRepository) Delete(ctx context.Context, req *author.Entity) (*author.Entity, error) {
+	_, err := s.db.DeleteOne(ctx, bson.D{{"_id", req.ObjectID}})
 	if err != nil {
 		return nil, err
 	}

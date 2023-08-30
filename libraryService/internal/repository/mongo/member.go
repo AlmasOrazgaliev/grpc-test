@@ -3,11 +3,11 @@ package mongo
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	desc "libraryService/proto"
+	"libraryService/internal/model/member"
 )
 
 type MemberRepository struct {
@@ -20,41 +20,41 @@ func NewMemberRepository(db *mongo.Collection) MemberRepository {
 	}
 }
 
-func (s *MemberRepository) List(ctx context.Context) (*desc.ListMember, error) {
-	var members desc.ListMember
+func (s *MemberRepository) List(ctx context.Context) ([]member.Entity, error) {
+	var members []member.Entity
 	cursor, err := s.db.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, err
 	}
-	if err = cursor.All(context.TODO(), &members.Data); err != nil {
+	if err = cursor.All(context.TODO(), &members); err != nil {
 		return nil, err
 	}
-	return &members, nil
+	return members, nil
 }
 
-func (s *MemberRepository) ListBooks(ctx context.Context, id string) (*desc.ListBook, error) {
-	var books desc.ListBook
-	cursor, err := s.db.Find(ctx, bson.D{{"_id", id}})
-	if err != nil {
-		return nil, err
-	}
-	if err = cursor.All(context.TODO(), &books.Data); err != nil {
-		return nil, err
-	}
-	return &books, nil
-}
+//func (s *MemberRepository) ListBooks(ctx context.Context, id string) (*member.Entity, error) {
+//	var books member.Entity
+//	cursor, err := s.db.Find(ctx, bson.D{{"_id", id}})
+//	if err != nil {
+//		return nil, err
+//	}
+//	if err = cursor.All(context.TODO(), &books.Data); err != nil {
+//		return nil, err
+//	}
+//	return &books, nil
+//}
 
-func (s *MemberRepository) Add(ctx context.Context, req *desc.MemberData) (*desc.MemberData, error) {
+func (s *MemberRepository) Add(ctx context.Context, req *member.Entity) (*member.Entity, error) {
 	res, err := s.db.InsertOne(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(res.InsertedID.(string))
+	req.ObjectID = res.InsertedID.(primitive.ObjectID)
 	return req, nil
 }
 
-func (s *MemberRepository) Get(ctx context.Context, id string) (*desc.MemberData, error) {
-	res := desc.MemberData{}
+func (s *MemberRepository) Get(ctx context.Context, id string) (*member.Entity, error) {
+	res := member.Entity{}
 	err := s.db.FindOne(ctx, bson.D{{"_id", id}}).Decode(&res)
 	if err != nil {
 		return nil, err
@@ -62,10 +62,10 @@ func (s *MemberRepository) Get(ctx context.Context, id string) (*desc.MemberData
 	return &res, nil
 }
 
-func (s *MemberRepository) Update(ctx context.Context, req *desc.MemberData) (*desc.MemberData, error) {
+func (s *MemberRepository) Update(ctx context.Context, req *member.Entity) (*member.Entity, error) {
 	options.Update().SetUpsert(true)
 	b, _ := json.Marshal(&req)
-	filter := bson.D{{"_id", req.Id}}
+	filter := bson.D{{"_id", req.ObjectID}}
 	update := bson.D{{"$set", b}}
 	_, err := s.db.UpdateOne(ctx, filter, update)
 	if err != nil {
@@ -74,8 +74,8 @@ func (s *MemberRepository) Update(ctx context.Context, req *desc.MemberData) (*d
 	return req, nil
 }
 
-func (s *MemberRepository) Delete(ctx context.Context, req *desc.MemberData) (*desc.MemberData, error) {
-	_, err := s.db.DeleteOne(ctx, bson.D{{"_id", req.Id}})
+func (s *MemberRepository) Delete(ctx context.Context, req *member.Entity) (*member.Entity, error) {
+	_, err := s.db.DeleteOne(ctx, bson.D{{"_id", req.ObjectID}})
 	if err != nil {
 		return nil, err
 	}
