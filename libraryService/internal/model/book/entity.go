@@ -7,5 +7,4 @@ type Entity struct {
 	Name     *string            `db:"name"`
 	Genre    *string            `db:"genre"`
 	ISBN     *string            `db:"isbn"`
-	Authors  []string           `db:"authors"`
 }

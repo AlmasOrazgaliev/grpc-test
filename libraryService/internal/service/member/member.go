@@ -9,16 +9,16 @@ import (
 	desc "libraryService/proto"
 )
 
-func (s *Service) List(ctx context.Context, req *desc.MemberData) (res *desc.ListMember, err error) {
+func (s *Service) List(ctx context.Context, req *desc.MemberData) (*desc.ListMember, error) {
 	logger := log.LoggerFromContext(ctx).Named("ListMembers")
-
+	res := &desc.ListMember{}
 	data, err := s.memberRepository.List(ctx)
 	if err != nil {
 		logger.Error("failed to select", zap.Error(err))
-		return
+		return nil, err
 	}
 	res.Data = member.ParseFromEntities(data)
-	return
+	return res, nil
 }
 
 func (s *Service) Add(ctx context.Context, req *desc.MemberData) (res *desc.MemberData, err error) {

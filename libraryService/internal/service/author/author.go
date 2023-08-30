@@ -9,16 +9,16 @@ import (
 	desc "libraryService/proto"
 )
 
-func (s *Service) List(ctx context.Context, req *desc.AuthorData) (res *desc.ListAuthor, err error) {
+func (s *Service) List(ctx context.Context, req *desc.AuthorData) (*desc.ListAuthor, error) {
 	logger := log.LoggerFromContext(ctx).Named("ListAuthors")
-
+	res := &desc.ListAuthor{}
 	data, err := s.authorRepository.List(ctx)
 	if err != nil {
 		logger.Error("failed to select", zap.Error(err))
-		return
+		return nil, err
 	}
 	res.Data = author.ParseFromEntities(data)
-	return
+	return res, nil
 }
 
 func (s *Service) Add(ctx context.Context, req *desc.AuthorData) (res *desc.AuthorData, err error) {

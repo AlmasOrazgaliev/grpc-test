@@ -2,7 +2,6 @@ package mongo
 
 import (
 	"context"
-	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,7 +19,7 @@ func NewBookRepository(db *mongo.Collection) BookRepository {
 	}
 }
 
-func (s *BookRepository) List(ctx context.Context) (dest []book.Entity, err error) {
+func (s *BookRepository) List(ctx context.Context) (dest []*book.Entity, err error) {
 	cursor, err := s.db.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, err
@@ -50,10 +49,17 @@ func (s *BookRepository) Get(ctx context.Context, id primitive.ObjectID) (*book.
 
 func (s *BookRepository) Update(ctx context.Context, req *book.Entity) error {
 	options.Update().SetUpsert(true)
-	b, _ := json.Marshal(&req)
+	pByte, err := bson.Marshal(req)
+	if err != nil {
+		return err
+	}
+	var update bson.M
+	err = bson.Unmarshal(pByte, &update)
+	if err != nil {
+		return err
+	}
 	filter := bson.D{{"_id", req.ObjectID}}
-	update := bson.D{{"$set", b}}
-	_, err := s.db.UpdateOne(ctx, filter, update)
+	_, err = s.db.UpdateOne(ctx, filter, bson.D{{"$set", update}})
 	if err != nil {
 		return err
 	}

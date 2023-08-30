@@ -1,6 +1,8 @@
 package book
 
-import desc "libraryService/proto"
+import (
+	desc "libraryService/proto"
+)
 
 func ParseFromEntity(data *Entity) (res *desc.BookData) {
 	res = &desc.BookData{
@@ -12,10 +14,10 @@ func ParseFromEntity(data *Entity) (res *desc.BookData) {
 	return
 }
 
-func ParseFromEntities(data []Entity) []*desc.BookData {
+func ParseFromEntities(data []*Entity) []*desc.BookData {
 	res := make([]*desc.BookData, 0)
 	for _, object := range data {
-		res = append(res, ParseFromEntity(&object))
+		res = append(res, ParseFromEntity(object))
 	}
 	return res
 }
