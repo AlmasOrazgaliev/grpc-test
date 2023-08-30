@@ -1,7 +1,6 @@
 package member
 
 import (
-	"libraryService/internal/model/book"
 	desc "libraryService/proto"
 )
 
@@ -9,7 +8,7 @@ func ParseFromEntity(data *Entity) (res *desc.MemberData) {
 	res = &desc.MemberData{
 		Id:       data.ObjectID.Hex(),
 		FullName: *data.FullName,
-		Books:    book.ParseFromEntities(data.Books),
+		Books:    data.Books,
 	}
 	return
 }

@@ -24,12 +24,12 @@ func (s *Service) List(ctx context.Context, req *desc.AuthorData) (res *desc.Lis
 func (s *Service) Add(ctx context.Context, req *desc.AuthorData) (res *desc.AuthorData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("AddAuthor")
 	data := &author.Entity{
+		ObjectID:  primitive.NewObjectID(),
 		FullName:  &req.FullName,
 		Pseudonym: &req.Pseudonym,
 		Specialty: &req.Specialty,
 	}
-	id, err := s.authorRepository.Add(ctx, data)
-	data.ObjectID = id.(primitive.ObjectID)
+	err = s.authorRepository.Add(ctx, data)
 	if err != nil {
 		logger.Error("failed to add", zap.Error(err))
 		return
@@ -40,8 +40,12 @@ func (s *Service) Add(ctx context.Context, req *desc.AuthorData) (res *desc.Auth
 
 func (s *Service) Get(ctx context.Context, req *desc.AuthorData) (res *desc.AuthorData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("GetAuthor")
-
-	data, err := s.authorRepository.Get(ctx, req.GetId())
+	id, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		logger.Error("failed to convert string to ObjectID", zap.Error(err))
+		return
+	}
+	data, err := s.authorRepository.Get(ctx, id)
 	if err != nil {
 		logger.Error("failed to get", zap.Error(err))
 		return
@@ -52,7 +56,13 @@ func (s *Service) Get(ctx context.Context, req *desc.AuthorData) (res *desc.Auth
 
 func (s *Service) Update(ctx context.Context, req *desc.AuthorData) (res *desc.AuthorData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("UpdateAuthor")
+	id, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		logger.Error("failed to convert string to ObjectID", zap.Error(err))
+		return
+	}
 	data := &author.Entity{
+		ObjectID:  id,
 		FullName:  &req.FullName,
 		Pseudonym: &req.Pseudonym,
 		Specialty: &req.Specialty,
@@ -68,8 +78,12 @@ func (s *Service) Update(ctx context.Context, req *desc.AuthorData) (res *desc.A
 
 func (s *Service) Delete(ctx context.Context, req *desc.AuthorData) (res *desc.AuthorData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("DeleteAuthor")
-
-	err = s.authorRepository.Delete(ctx, req.GetId())
+	id, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		logger.Error("failed to convert string to ObjectID", zap.Error(err))
+		return
+	}
+	err = s.authorRepository.Delete(ctx, id)
 	if err != nil {
 		logger.Error("failed to delete", zap.Error(err))
 		return

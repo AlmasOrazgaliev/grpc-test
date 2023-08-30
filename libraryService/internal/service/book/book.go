@@ -24,12 +24,12 @@ func (s *Service) List(ctx context.Context, req *desc.BookData) (res *desc.ListB
 func (s *Service) Add(ctx context.Context, req *desc.BookData) (res *desc.BookData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("AddBook")
 	data := &book.Entity{
-		Name:  &req.Name,
-		Genre: &req.Genre,
-		ISBN:  &req.Isbn,
+		ObjectID: primitive.NewObjectID(),
+		Name:     &req.Name,
+		Genre:    &req.Genre,
+		ISBN:     &req.Isbn,
 	}
-	id, err := s.bookRepository.Add(ctx, data)
-	data.ObjectID = id.(primitive.ObjectID)
+	err = s.bookRepository.Add(ctx, data)
 	if err != nil {
 		logger.Error("failed to add", zap.Error(err))
 		return
@@ -40,8 +40,12 @@ func (s *Service) Add(ctx context.Context, req *desc.BookData) (res *desc.BookDa
 
 func (s *Service) Get(ctx context.Context, req *desc.BookData) (res *desc.BookData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("GetBook")
-
-	data, err := s.bookRepository.Get(ctx, req.GetId())
+	id, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		logger.Error("failed to convert string to ObjectID", zap.Error(err))
+		return
+	}
+	data, err := s.bookRepository.Get(ctx, id)
 	if err != nil {
 		logger.Error("failed to get", zap.Error(err))
 		return
@@ -52,10 +56,16 @@ func (s *Service) Get(ctx context.Context, req *desc.BookData) (res *desc.BookDa
 
 func (s *Service) Update(ctx context.Context, req *desc.BookData) (res *desc.BookData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("UpdateBook")
+	id, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		logger.Error("failed to convert string to ObjectID", zap.Error(err))
+		return
+	}
 	data := &book.Entity{
-		Name:  &req.Name,
-		Genre: &req.Genre,
-		ISBN:  &req.Isbn,
+		ObjectID: id,
+		Name:     &req.Name,
+		Genre:    &req.Genre,
+		ISBN:     &req.Isbn,
 	}
 	err = s.bookRepository.Update(ctx, data)
 	if err != nil {
@@ -68,8 +78,12 @@ func (s *Service) Update(ctx context.Context, req *desc.BookData) (res *desc.Boo
 
 func (s *Service) Delete(ctx context.Context, req *desc.BookData) (res *desc.BookData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("DeleteBook")
-
-	err = s.bookRepository.Delete(ctx, req.GetId())
+	id, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		logger.Error("failed to convert string to ObjectID", zap.Error(err))
+		return
+	}
+	err = s.bookRepository.Delete(ctx, id)
 	if err != nil {
 		logger.Error("failed to delete", zap.Error(err))
 		return

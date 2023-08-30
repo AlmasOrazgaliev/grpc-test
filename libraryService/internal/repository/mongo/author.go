@@ -32,16 +32,15 @@ func (s *AuthorRepository) List(ctx context.Context) ([]author.Entity, error) {
 	return authors, nil
 }
 
-func (s *AuthorRepository) Add(ctx context.Context, req *author.Entity) (interface{}, error) {
-	res, err := s.db.InsertOne(ctx, req)
+func (s *AuthorRepository) Add(ctx context.Context, req *author.Entity) error {
+	_, err := s.db.InsertOne(ctx, req)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	req.ObjectID = res.InsertedID.(primitive.ObjectID)
-	return res.InsertedID, nil
+	return nil
 }
 
-func (s *AuthorRepository) Get(ctx context.Context, id string) (*author.Entity, error) {
+func (s *AuthorRepository) Get(ctx context.Context, id primitive.ObjectID) (*author.Entity, error) {
 	res := author.Entity{}
 	err := s.db.FindOne(ctx, bson.D{{"_id", id}}).Decode(&res)
 	if err != nil {
@@ -62,7 +61,7 @@ func (s *AuthorRepository) Update(ctx context.Context, req *author.Entity) error
 	return nil
 }
 
-func (s *AuthorRepository) Delete(ctx context.Context, id string) error {
+func (s *AuthorRepository) Delete(ctx context.Context, id primitive.ObjectID) error {
 	_, err := s.db.DeleteOne(ctx, bson.D{{"_id", id}})
 	if err != nil {
 		return err

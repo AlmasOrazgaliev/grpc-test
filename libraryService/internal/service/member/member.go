@@ -24,11 +24,11 @@ func (s *Service) List(ctx context.Context, req *desc.MemberData) (res *desc.Lis
 func (s *Service) Add(ctx context.Context, req *desc.MemberData) (res *desc.MemberData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("AddMember")
 	data := &member.Entity{
+		ObjectID: primitive.NewObjectID(),
 		FullName: &req.FullName,
 		Books:    req.Books,
 	}
-	id, err := s.memberRepository.Add(ctx, data)
-	data.ObjectID = id.(primitive.ObjectID)
+	err = s.memberRepository.Add(ctx, data)
 	if err != nil {
 		logger.Error("failed to add", zap.Error(err))
 		return
@@ -39,8 +39,12 @@ func (s *Service) Add(ctx context.Context, req *desc.MemberData) (res *desc.Memb
 
 func (s *Service) Get(ctx context.Context, req *desc.MemberData) (res *desc.MemberData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("GetMember")
-
-	data, err := s.memberRepository.Get(ctx, req.GetId())
+	id, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		logger.Error("failed to convert string to ObjectID", zap.Error(err))
+		return
+	}
+	data, err := s.memberRepository.Get(ctx, id)
 	if err != nil {
 		logger.Error("failed to get", zap.Error(err))
 		return
@@ -72,8 +76,12 @@ func (s *Service) Update(ctx context.Context, req *desc.MemberData) (res *desc.M
 
 func (s *Service) Delete(ctx context.Context, req *desc.MemberData) (res *desc.MemberData, err error) {
 	logger := log.LoggerFromContext(ctx).Named("DeleteMember")
-
-	err = s.memberRepository.Delete(ctx, req.GetId())
+	id, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		logger.Error("failed to convert string to ObjectID", zap.Error(err))
+		return
+	}
+	err = s.memberRepository.Delete(ctx, id)
 	if err != nil {
 		logger.Error("failed to delete", zap.Error(err))
 		return

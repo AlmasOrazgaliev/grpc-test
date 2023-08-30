@@ -31,16 +31,15 @@ func (s *BookRepository) List(ctx context.Context) (dest []book.Entity, err erro
 	return
 }
 
-func (s *BookRepository) Add(ctx context.Context, req *book.Entity) (interface{}, error) {
-	res, err := s.db.InsertOne(ctx, req)
+func (s *BookRepository) Add(ctx context.Context, req *book.Entity) error {
+	_, err := s.db.InsertOne(ctx, req)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	req.ObjectID = res.InsertedID.(primitive.ObjectID)
-	return res.InsertedID, nil
+	return nil
 }
 
-func (s *BookRepository) Get(ctx context.Context, id string) (*book.Entity, error) {
+func (s *BookRepository) Get(ctx context.Context, id primitive.ObjectID) (*book.Entity, error) {
 	res := book.Entity{}
 	err := s.db.FindOne(ctx, bson.D{{"_id", id}}).Decode(&res)
 	if err != nil {
@@ -61,7 +60,7 @@ func (s *BookRepository) Update(ctx context.Context, req *book.Entity) error {
 	return nil
 }
 
-func (s *BookRepository) Delete(ctx context.Context, id string) error {
+func (s *BookRepository) Delete(ctx context.Context, id primitive.ObjectID) error {
 	_, err := s.db.DeleteOne(ctx, bson.D{{"_id", id}})
 	if err != nil {
 		return err
