@@ -5,8 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="99b3286e-f43a-404f-bbca-65aa7378c34f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/proto/library.pb.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/proto/library_grpc.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/domain/author/repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/domain/book/repository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/domain/member/repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/domain/author/dto.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/domain/author/dto.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/domain/author/entity.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/domain/author/entity.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/domain/book/dto.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/domain/book/dto.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/domain/book/entity.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/domain/book/entity.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../libraryService/pkg/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/../libraryService/pkg/server/server.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../proto/library.proto" beforeDir="false" afterPath="$PROJECT_DIR$/../proto/library.proto" afterDir="false" />
     </list>
