@@ -3,8 +3,7 @@ package http
 import (
 	"api-gateway/internal/domain/book"
 	"api-gateway/pkg/server/status"
-	"database/sql"
-	"errors"
+	desc "api-gateway/proto"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -12,11 +11,11 @@ import (
 )
 
 type BookHandler struct {
-	libraryService *library.Service
+	bookServiceClient desc.BookClient
 }
 
-func NewBookHandler(s *library.Service) *BookHandler {
-	return &BookHandler{libraryService: s}
+func NewBookHandler(s desc.BookClient) *BookHandler {
+	return &BookHandler{bookServiceClient: s}
 }
 
 func (h *BookHandler) Routes() chi.Router {
@@ -29,14 +28,13 @@ func (h *BookHandler) Routes() chi.Router {
 		r.Get("/", h.get)
 		r.Put("/", h.update)
 		r.Delete("/", h.delete)
-		r.Get("/authors", h.listAuthors)
 	})
 
 	return r
 }
 
 func (h *BookHandler) list(w http.ResponseWriter, r *http.Request) {
-	res, err := h.libraryService.ListBooks(r.Context())
+	res, err := h.bookServiceClient.List(r.Context(), &desc.BookData{})
 	if err != nil {
 		status.InternalServerError(w, r, err)
 		return
@@ -51,8 +49,12 @@ func (h *BookHandler) create(w http.ResponseWriter, r *http.Request) {
 		status.BadRequest(w, r, err, req)
 		return
 	}
-
-	res, err := h.libraryService.CreateBook(r.Context(), req)
+	data := &desc.BookData{
+		Name:  req.Name,
+		Isbn:  req.ISBN,
+		Genre: req.Genre,
+	}
+	res, err := h.bookServiceClient.Add(r.Context(), data)
 	if err != nil {
 		status.InternalServerError(w, r, err)
 		return
@@ -64,14 +66,9 @@ func (h *BookHandler) create(w http.ResponseWriter, r *http.Request) {
 func (h *BookHandler) get(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	res, err := h.libraryService.GetBook(r.Context(), id)
+	res, err := h.bookServiceClient.Get(r.Context(), &desc.BookData{Id: id})
 	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			status.NotFound(w, r, err)
-		default:
-			status.InternalServerError(w, r, err)
-		}
+		status.InternalServerError(w, r, err)
 		return
 	}
 
@@ -86,45 +83,26 @@ func (h *BookHandler) update(w http.ResponseWriter, r *http.Request) {
 		status.BadRequest(w, r, err, req)
 		return
 	}
-
-	if err := h.libraryService.UpdateBook(r.Context(), id, req); err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			status.NotFound(w, r, err)
-		default:
-			status.InternalServerError(w, r, err)
-		}
+	data := &desc.BookData{
+		Id:    id,
+		Name:  req.Name,
+		Isbn:  req.ISBN,
+		Genre: req.Genre,
+	}
+	res, err := h.bookServiceClient.Update(r.Context(), data)
+	if err != nil {
+		status.InternalServerError(w, r, err)
 		return
 	}
+
+	status.OK(w, r, res)
 }
 
 func (h *BookHandler) delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	if err := h.libraryService.DeleteBook(r.Context(), id); err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			status.NotFound(w, r, err)
-		default:
-			status.InternalServerError(w, r, err)
-		}
-		return
-	}
-}
-
-func (h *BookHandler) listAuthors(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-
-	res, err := h.libraryService.ListBookAuthors(r.Context(), id)
+	_, err := h.bookServiceClient.Get(r.Context(), &desc.BookData{Id: id})
 	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			status.NotFound(w, r, err)
-		default:
-			status.InternalServerError(w, r, err)
-		}
-		return
+		status.InternalServerError(w, r, err)
 	}
-
-	status.OK(w, r, res)
 }

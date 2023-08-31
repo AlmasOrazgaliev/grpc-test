@@ -1,20 +1,22 @@
 package handler
 
 import (
-	"net/url"
-	"path"
+	"api-gateway/internal/config"
+	"api-gateway/internal/handler/http"
+	"api-gateway/pkg/server/router"
+	desc "api-gateway/proto"
+	//"github.com/swaggo/swag/example/basic/docs"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/oauth"
-	httpSwagger "github.com/swaggo/http-swagger/v2"
+	//httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 type Dependencies struct {
 	Configs             config.Configs
-	AuthService         *auth.Service
-	LibraryService      *library.Service
-	SubscriptionService *subscription.Service
+	AuthorServiceClient desc.AuthorClient
+	BookServiceClient   desc.BookClient
+	MemberServiceClient desc.MemberClient
 }
 
 // Configuration is an alias for a function that will take in a pointer to a Handler and modify it
@@ -55,37 +57,28 @@ func WithHTTPHandler() Configuration {
 		h.HTTP.Use(middleware.Timeout(h.dependencies.Configs.SERVER.Timeout))
 
 		// Init swagger handler
-		app, err := url.Parse(h.dependencies.Configs.SERVER.Host)
-		if err != nil {
-			return
-		}
-		app.Path = path.Join(app.Path, "/swagger/doc.json")
-
-		docs.SwaggerInfo.BasePath = "/api/v1"
-		docs.SwaggerInfo.Host = app.Host
-		docs.SwaggerInfo.Schemes = []string{app.Scheme}
-
-		h.HTTP.Get("/swagger/*", httpSwagger.Handler(
-			httpSwagger.URL(app.String()),
-		))
-
-		// Init auth handler
-		authHandler := oauth.NewBearerServer(
-			h.dependencies.Configs.TOKEN.Key,
-			h.dependencies.Configs.TOKEN.Expires,
-			h.dependencies.AuthService, nil)
-
-		h.HTTP.Post("/token", authHandler.UserCredentials)
-		h.HTTP.Post("/auth", authHandler.ClientCredentials)
+		//app, err := url.Parse(h.dependencies.Configs.SERVER.Host)
+		//if err != nil {
+		//	return
+		//}
+		//app.Path = path.Join(app.Path, "/swagger/doc.json")
+		//
+		//docs.SwaggerInfo.BasePath = "/api/v1"
+		//docs.SwaggerInfo.Host = app.Host
+		//docs.SwaggerInfo.Schemes = []string{app.Scheme}
+		//
+		//h.HTTP.Get("/swagger/*", httpSwagger.Handler(
+		//	httpSwagger.URL(app.String()),
+		//))
 
 		// Init service handlers
-		authorHandler := http.NewAuthorHandler(h.dependencies.LibraryService)
-		bookHandler := http.NewBookHandler(h.dependencies.LibraryService)
-		memberHandler := http.NewMemberHandler(h.dependencies.SubscriptionService)
+		authorHandler := http.NewAuthorHandler(h.dependencies.AuthorServiceClient)
+		bookHandler := http.NewBookHandler(h.dependencies.BookServiceClient)
+		memberHandler := http.NewMemberHandler(h.dependencies.MemberServiceClient)
 
 		h.HTTP.Route("/api/v1", func(r chi.Router) {
 			// use the Bearer Authentication middleware
-			r.Use(oauth.Authorize(h.dependencies.Configs.TOKEN.Key, nil))
+			//r.Use(oauth.Authorize(h.dependencies.Configs.TOKEN.Key, nil))
 
 			r.Mount("/authors", authorHandler.Routes())
 			r.Mount("/books", bookHandler.Routes())

@@ -3,20 +3,18 @@ package http
 import (
 	"api-gateway/internal/domain/author"
 	"api-gateway/pkg/server/status"
-	"database/sql"
-	"errors"
-	"net/http"
-
+	desc "api-gateway/proto"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"net/http"
 )
 
 type AuthorHandler struct {
-	libraryService *library.Service
+	authorServiceClient desc.AuthorClient
 }
 
-func NewAuthorHandler(s *library.Service) *AuthorHandler {
-	return &AuthorHandler{libraryService: s}
+func NewAuthorHandler(s desc.AuthorClient) *AuthorHandler {
+	return &AuthorHandler{authorServiceClient: s}
 }
 
 func (h *AuthorHandler) Routes() chi.Router {
@@ -35,7 +33,7 @@ func (h *AuthorHandler) Routes() chi.Router {
 }
 
 func (h *AuthorHandler) list(w http.ResponseWriter, r *http.Request) {
-	res, err := h.libraryService.ListAuthors(r.Context())
+	res, err := h.authorServiceClient.List(r.Context(), &desc.AuthorData{})
 	if err != nil {
 		status.InternalServerError(w, r, err)
 		return
@@ -50,8 +48,12 @@ func (h *AuthorHandler) create(w http.ResponseWriter, r *http.Request) {
 		status.BadRequest(w, r, err, req)
 		return
 	}
-
-	res, err := h.libraryService.CreateAuthor(r.Context(), req)
+	data := &desc.AuthorData{
+		FullName:  req.FullName,
+		Pseudonym: req.Pseudonym,
+		Specialty: req.Specialty,
+	}
+	res, err := h.authorServiceClient.Add(r.Context(), data)
 	if err != nil {
 		status.InternalServerError(w, r, err)
 		return
@@ -63,14 +65,9 @@ func (h *AuthorHandler) create(w http.ResponseWriter, r *http.Request) {
 func (h *AuthorHandler) get(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	res, err := h.libraryService.GetAuthor(r.Context(), id)
+	res, err := h.authorServiceClient.Get(r.Context(), &desc.AuthorData{Id: id})
 	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			status.NotFound(w, r, err)
-		default:
-			status.InternalServerError(w, r, err)
-		}
+		status.InternalServerError(w, r, err)
 		return
 	}
 
@@ -85,28 +82,27 @@ func (h *AuthorHandler) update(w http.ResponseWriter, r *http.Request) {
 		status.BadRequest(w, r, err, req)
 		return
 	}
-
-	if err := h.libraryService.UpdateAuthor(r.Context(), id, req); err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			status.NotFound(w, r, err)
-		default:
-			status.InternalServerError(w, r, err)
-		}
+	data := &desc.AuthorData{
+		Id:        id,
+		FullName:  req.FullName,
+		Pseudonym: req.Pseudonym,
+		Specialty: req.Specialty,
+	}
+	res, err := h.authorServiceClient.Update(r.Context(), data)
+	if err != nil {
+		status.InternalServerError(w, r, err)
 		return
 	}
+
+	status.OK(w, r, res)
+
 }
 
 func (h *AuthorHandler) delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-
-	if err := h.libraryService.DeleteAuthor(r.Context(), id); err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			status.NotFound(w, r, err)
-		default:
-			status.InternalServerError(w, r, err)
-		}
+	_, err := h.authorServiceClient.Get(r.Context(), &desc.AuthorData{Id: id})
+	if err != nil {
+		status.InternalServerError(w, r, err)
 		return
 	}
 }

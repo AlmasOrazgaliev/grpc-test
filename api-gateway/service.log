@@ -1,0 +1,6 @@
+{"level":"info","timestamp":"2023-08-31T15:50:08.567+0600","caller":"server/server.go:37","msg":"http server started on http://localhost:80"}
+{"level":"info","timestamp":"2023-08-31T15:50:08.568+0600","caller":"app/app.go:72","msg":"http server started on http://localhost:80/swagger/index.html"}
+{"level":"info","timestamp":"2023-08-31T15:53:31.401+0600","caller":"server/server.go:37","msg":"http server started on http://localhost:8080"}
+{"level":"info","timestamp":"2023-08-31T15:53:31.402+0600","caller":"app/app.go:72","msg":"http server started on http://localhost:8080/swagger/index.html"}
+{"level":"info","timestamp":"2023-08-31T15:54:32.514+0600","caller":"server/server.go:37","msg":"http server started on http://localhost:8080"}
+{"level":"info","timestamp":"2023-08-31T15:54:32.515+0600","caller":"app/app.go:72","msg":"http server started on http://localhost:8080/swagger/index.html"}

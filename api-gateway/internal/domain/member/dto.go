@@ -1,14 +1,14 @@
 package member
 
 import (
+	desc "api-gateway/proto"
 	"errors"
 	"net/http"
 )
 
 type Request struct {
-	ID       string   `json:"id"`
-	FullName string   `json:"fullName"`
-	Books    []string `json:"books"`
+	ID       string `json:"id"`
+	FullName string `json:"fullName"`
 }
 
 func (s *Request) Bind(r *http.Request) error {
@@ -20,23 +20,21 @@ func (s *Request) Bind(r *http.Request) error {
 }
 
 type Response struct {
-	ID       string   `json:"id"`
-	FullName string   `json:"fullName"`
-	Books    []string `json:"books"`
+	ID       string `json:"id"`
+	FullName string `json:"fullName"`
 }
 
-func ParseFromEntity(data Entity) (res Response) {
+func ParseFromEntity(data *desc.MemberData) (res Response) {
 	res = Response{
-		ID:       data.ID,
-		FullName: *data.FullName,
-		Books:    data.Books,
+		ID:       data.Id,
+		FullName: data.FullName,
 	}
 	return
 }
 
-func ParseFromEntities(data []Entity) (res []Response) {
+func ParseFromEntities(data *desc.ListMember) (res []Response) {
 	res = make([]Response, 0)
-	for _, object := range data {
+	for _, object := range data.Data {
 		res = append(res, ParseFromEntity(object))
 	}
 	return

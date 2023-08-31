@@ -1,6 +1,7 @@
 package author
 
 import (
+	desc "api-gateway/proto"
 	"errors"
 	"net/http"
 )
@@ -34,19 +35,19 @@ type Response struct {
 	Specialty string `json:"specialty"`
 }
 
-func ParseFromEntity(data Entity) (res Response) {
+func ParseFromEntity(data *desc.AuthorData) (res Response) {
 	res = Response{
-		ID:        data.ID,
-		FullName:  *data.FullName,
-		Pseudonym: *data.Pseudonym,
-		Specialty: *data.Specialty,
+		ID:        data.Id,
+		FullName:  data.FullName,
+		Pseudonym: data.Pseudonym,
+		Specialty: data.Specialty,
 	}
 	return
 }
 
-func ParseFromEntities(data []Entity) (res []Response) {
+func ParseFromEntities(data *desc.ListAuthor) (res []Response) {
 	res = make([]Response, 0)
-	for _, object := range data {
+	for _, object := range data.Data {
 		res = append(res, ParseFromEntity(object))
 	}
 	return

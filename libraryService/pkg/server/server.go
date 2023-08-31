@@ -73,7 +73,9 @@ func (s *Server) Stop(ctx context.Context) (err error) {
 			return
 		}
 	}
-
+	if s.grpc != nil {
+		s.grpc.Stop()
+	}
 	return
 }
 

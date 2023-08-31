@@ -1,16 +1,16 @@
 package book
 
 import (
+	desc "api-gateway/proto"
 	"errors"
 	"net/http"
 )
 
 type Request struct {
-	ID      string   `json:"id"`
-	Name    string   `json:"name"`
-	Genre   string   `json:"genre"`
-	ISBN    string   `json:"isbn"`
-	Authors []string `json:"authors"`
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Genre string `json:"genre"`
+	ISBN  string `json:"isbn"`
 }
 
 func (s *Request) Bind(r *http.Request) error {
@@ -30,26 +30,25 @@ func (s *Request) Bind(r *http.Request) error {
 }
 
 type Response struct {
-	ID      string   `json:"id"`
-	Name    string   `json:"name"`
-	Genre   string   `json:"genre"`
-	ISBN    string   `json:"isbn"`
-	Authors []string `json:"authors"`
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Genre string `json:"genre"`
+	ISBN  string `json:"isbn"`
 }
 
-func ParseFromEntity(data Entity) (res Response) {
+func ParseFromEntity(data *desc.BookData) (res Response) {
 	res = Response{
-		ID:    data.ID,
-		Name:  *data.Name,
-		Genre: *data.Genre,
-		ISBN:  *data.ISBN,
+		ID:    data.Id,
+		Name:  data.Name,
+		Genre: data.Genre,
+		ISBN:  data.Isbn,
 	}
 	return
 }
 
-func ParseFromEntities(data []Entity) (res []Response) {
+func ParseFromEntities(data *desc.ListBook) (res []Response) {
 	res = make([]Response, 0)
-	for _, object := range data {
+	for _, object := range data.Data {
 		res = append(res, ParseFromEntity(object))
 	}
 	return
