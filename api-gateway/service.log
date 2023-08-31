@@ -4,3 +4,17 @@
 {"level":"info","timestamp":"2023-08-31T15:53:31.402+0600","caller":"app/app.go:72","msg":"http server started on http://localhost:8080/swagger/index.html"}
 {"level":"info","timestamp":"2023-08-31T15:54:32.514+0600","caller":"server/server.go:37","msg":"http server started on http://localhost:8080"}
 {"level":"info","timestamp":"2023-08-31T15:54:32.515+0600","caller":"app/app.go:72","msg":"http server started on http://localhost:8080/swagger/index.html"}
+{"level":"info","timestamp":"2023-08-31T16:55:03.915+0600","caller":"server/server.go:37","msg":"http server started on http://localhost:8085"}
+{"level":"info","timestamp":"2023-08-31T16:55:03.916+0600","caller":"app/app.go:72","msg":"http server started on http://localhost:8085/swagger/index.html"}
+{"level":"info","timestamp":"2023-08-31T17:14:01.586+0600","caller":"server/server.go:37","msg":"http server started on http://localhost:8085"}
+{"level":"info","timestamp":"2023-08-31T17:14:01.587+0600","caller":"app/app.go:72","msg":"http server started on http://localhost:8085/swagger/index.html"}
+{"level":"info","timestamp":"2023-08-31T18:23:55.554+0600","caller":"server/server.go:37","msg":"http server started on http://localhost:8080"}
+{"level":"info","timestamp":"2023-08-31T18:23:55.554+0600","caller":"app/app.go:72","msg":"http server started on http://localhost:8080/swagger/index.html"}
+{"level":"info","timestamp":"2023-08-31T18:25:09.935+0600","caller":"server/server.go:37","msg":"http server started on http://localhost:8080"}
+{"level":"info","timestamp":"2023-08-31T18:25:09.935+0600","caller":"app/app.go:72","msg":"http server started on http://localhost:8080/swagger/index.html"}
+{"level":"info","timestamp":"2023-08-31T18:26:50.534+0600","caller":"server/server.go:37","msg":"http server started on http://localhost:8080"}
+{"level":"info","timestamp":"2023-08-31T18:26:50.534+0600","caller":"app/app.go:72","msg":"http server started on http://localhost:8080/swagger/index.html"}
+{"level":"info","timestamp":"2023-08-31T18:27:11.080+0600","caller":"server/server.go:37","msg":"http server started on http://localhost:8080"}
+{"level":"info","timestamp":"2023-08-31T18:27:11.080+0600","caller":"app/app.go:72","msg":"http server started on http://localhost:8080/swagger/index.html"}
+{"level":"info","timestamp":"2023-08-31T18:41:08.197+0600","caller":"server/server.go:37","msg":"http server started on http://localhost:8080"}
+{"level":"info","timestamp":"2023-08-31T18:41:08.197+0600","caller":"app/app.go:72","msg":"http server started on http://localhost:8080/swagger/index.html"}

@@ -14,7 +14,7 @@ type Database struct {
 }
 
 func NewDatabase() (database *Database, err error) {
-	clientOpt := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOpt := options.Client().ApplyURI("mongodb://mongodb:27017")
 
 	client, err := mongo.Connect(context.TODO(), clientOpt)
 	if err != nil {

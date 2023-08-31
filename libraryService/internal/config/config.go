@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	defaultPort               = "80"
+	defaultPort               = "8081"
 	defaultReadTimeout        = 15 * time.Second
 	defaultWriteTimeout       = 15 * time.Second
 	defaultIdleTimeout        = 60 * time.Second

@@ -5,28 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="99b3286e-f43a-404f-bbca-65aa7378c34f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/app/app.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../docker-compose.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../libraryService/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/domain/author/dto.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/domain/author/dto.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/domain/author/entity.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/domain/author/repository.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/domain/book/dto.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/domain/book/dto.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/domain/book/entity.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/domain/book/repository.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/domain/member/dto.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/domain/member/dto.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/domain/member/entity.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/domain/member/repository.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/handler/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/handler/handler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/handler/http/author.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/handler/http/author.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/handler/http/book.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/handler/http/book.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/handler/http/member.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/handler/http/member.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/service/library/author.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../libraryService/pkg/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/../libraryService/pkg/server/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/app.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service.log" beforeDir="false" afterPath="$PROJECT_DIR$/service.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../libraryService/internal/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/../libraryService/internal/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../libraryService/pkg/store/database.go" beforeDir="false" afterPath="$PROJECT_DIR$/../libraryService/pkg/store/database.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../libraryService/service.log" beforeDir="false" afterPath="$PROJECT_DIR$/../libraryService/service.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../proto/library.proto" beforeDir="false" afterPath="$PROJECT_DIR$/../proto/library.proto" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

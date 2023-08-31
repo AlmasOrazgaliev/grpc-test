@@ -33,7 +33,7 @@ func Run() {
 		return
 	}
 
-	conn, err := grpc.Dial("localhost:80", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial("0.0.0.0:8081", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logger.Error("ERR_INIT_CONNECTION", zap.Error(err))
 		return
